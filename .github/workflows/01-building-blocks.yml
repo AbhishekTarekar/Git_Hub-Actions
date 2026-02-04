@@ -1,5 +1,6 @@
 ﻿name: 01 - Building Blocks
-on: push
+on: 
+  - push
 
 jobs:
   echo-hello:
@@ -19,5 +20,6 @@ jobs:
         run: echo "good bye"
       
       
+
 
 
