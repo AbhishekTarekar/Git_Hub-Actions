@@ -1,18 +1,57 @@
 name: 02 - Workflow Events
+
 on:
-    push:
-    pull_request:
-    schedule:
-      - cron: '*/5 * * * *'
-    workflow_dispatch:
-   #- push
-   #- pull_request
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 2 * 11 5'
+
 jobs:
-    echo:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Show the trigger
-              run: echo "I have triggered by ${{github.event_name}} event."
-            - name: Say hi
-              run: echo "Hi i am second step of this work flow"
-              
+  echo:
+    runs-on: ubuntu-latest
+
+    # ✅ Job outputs must be declared here to use in next job
+    outputs:
+      value: ${{ steps.values.outputs.value }}
+      sumWithValue: ${{ steps.add.outputs.sumWithValue }}
+
+    steps:
+      - name: Show the trigger
+        run: echo "I was triggered by ${{ github.event_name }} event."
+
+      - name: Say hi
+        run: echo "Hi I am second step of this workflow"
+
+      - name: Calculate sum and export for next steps (same job)
+        run: |
+          sum=$((1+2))
+          echo "SUM=$sum" >> "$GITHUB_ENV"
+          echo "Calculated SUM=$sum"
+
+      - name: Use SUM in next step (same job)
+        run: |
+          echo "Sum is $SUM"
+
+      - name: Use GitHub Output (create step output)
+        id: values
+        run: |
+          echo "value=2" >> "$GITHUB_OUTPUT"
+
+      - name: Use SUM + step output and expose as step output
+        id: add
+        run: |
+          sumWithValue=$(( SUM + ${{ steps.values.outputs.value }} ))
+          echo "sumWithValue=$sumWithValue" >> "$GITHUB_OUTPUT"
+          echo "sumWithValue=$sumWithValue"
+
+  echo2:
+    runs-on: ubuntu-latest
+    needs: echo
+
+    steps:
+      - name: use value from previous job
+        run: echo "value=${{ needs.echo.outputs.value }}"
+
+      - name: use sumWithValue from previous job
+        run: echo "sumWithValue=${{ needs.echo.outputs.sumWithValue }}"
