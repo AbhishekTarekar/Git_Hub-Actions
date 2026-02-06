@@ -23,7 +23,7 @@ jobs:
               run: |
                 c=4
                 d=2
-                echo "C=$c" >> "$GITHUB_OUPUT"
+                echo "C=$c" >> "$GITHUB_OUTPUT"
                 echo "D=$d" >> "$GITHUB_OUTPUT"
             - name: Calculate sum and division
               run: |
