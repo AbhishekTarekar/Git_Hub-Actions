@@ -19,4 +19,4 @@ jobs:
               if: ${{inputs.debug && github.ref=='refs/heads/main'}}
               run: echo "I waas triggere from main"
             - name: "Greeting"
-              run: "Thank you for running this ${{github.workflow}}  WorkFlow"
+              run: echo "Thank you for running this ${{github.workflow}}  WorkFlow"
