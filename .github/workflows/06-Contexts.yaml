@@ -36,7 +36,7 @@ jobs:
               env:
                 MY_OverWritten: 'step'
               run: |
-
+                echo "$MY_OverWritten"
                 echo "$((${{env.MY_AatJob}}+${{env.MY_AatWorkflow}}))"
                 echo "$((${{env.MY_BatJob}}+${{env.MY_BatWorkflow}}))"
             - name: Priority of ENV's
