@@ -1,8 +1,29 @@
 name: Calculator
 on:
-    push
+    push:
+    workflow_dispatch:
+        inputs:
+          A:
+            type: number
+            default: 4
+          B:
+            type: number
+            default: 5
+          Operation:
+            type: choice
+            options:
+              - Add
+              - Substract
+              - Multiply
+              - Divide
+            default: Add
+            required: true
+          
+
+
 
 jobs:
+
     defineValues:
         runs-on: ubuntu-latest
         outputs:
@@ -40,3 +61,38 @@ jobs:
         - name: UseCandD
           run: |
             echo $((${{needs.defineValues.outputs.C}}/${{needs.defineValues.outputs.D}}))
+    Compute:
+      runs-on: ubuntu-latest
+      
+      steps:
+        - name: compute
+          id: calci
+          shell: bash
+          run: |
+            A="${{inputs.A}}"
+            B="${{inputs.B}}"
+            op="${{inputs.Operation}}"
+
+            case "$op" in
+              Add)    expr="$A + $B" ; symbol="+" ;;
+              Substract) expr="$A - $B" ; symbol="-" ;;
+              Multiply) expr="$A * $B" ; symbol="*" ;;
+              Divide)
+                if ["$(echo "$B ==0" | bc)" -eq 1]; then
+                  echo "Error :Division by zero is not allowed" >&2
+                  exit 1
+                fi
+                expr = "$A / $B" symbol="/" ;;
+              *) echo "Unsupported opertion: $op" >&2;
+                 exit 1 ;;
+            esac
+
+            
+            echo "expression=$A $symbol $B" >> "$GITHUB_OUTPUT"
+            echo "result=$expr" >> "$GITHUB_OUTPUT"
+        
+        - name: print Result
+          run: |
+            echo "Expression: ${{steps.calci.outputs.expression}}"
+            echo "Result: ${{steps.calci.outputs.result}}"
+
