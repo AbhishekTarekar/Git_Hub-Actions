@@ -87,9 +87,9 @@ jobs:
                  exit 1 ;;
             esac
 
-            
+            results="$(echo expr | bc -l)"
             echo "expression=$A $symbol $B" >> "$GITHUB_OUTPUT"
-            echo "result=$expr" >> "$GITHUB_OUTPUT"
+            echo "result=$results" >> "$GITHUB_OUTPUT"
         
         - name: print Result
           run: |
